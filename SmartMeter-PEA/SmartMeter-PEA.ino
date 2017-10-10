@@ -6,7 +6,6 @@
 #include "internet.h"
 #include "File.h"
 #include "http.h"
-#include <DS1307RTC.h>
 #include <TimeLib.h>
 #include <SPI.h>
 #include <SD.h>
@@ -20,22 +19,19 @@
 INTERNET net;
 UC_FILE file;
 HTTP http;
-
 //SIM TRUE  internet
 #define APN "internet" // AIS
 #define USER ""
 #define PASS ""
-
 AltSoftSerial mySerial;
-
-void debug(String data)
-{
+void debug(String data){
   Serial.println(data);
 }
-void data_out(char data)
-{
+void data_out(char data){
   Serial.write(data);
 }
+
+
 
 /*###   Current Variable    ###*/
 #define ct1 A0
@@ -44,23 +40,58 @@ void data_out(char data)
 #define ct4 A3
 #define ct5 A8
 #define ct6 A9
-
 EnergyMonitor emon1;
 EnergyMonitor emon2;
 EnergyMonitor emon3;
 EnergyMonitor emon4;
 EnergyMonitor emon5;
 EnergyMonitor emon6;
-
 double Irms1, Irms2, Irms3, Irms4, Irms5, Irms6;
 
 
-/*###   Void setup    ###*/
+
+/*###   MAX6675 Variable    ###*/
 int ktcSO = 8;
 int ktcCS = 9;
 int ktcCLK = 11;
-
 MAX6675 ktc(ktcCLK, ktcCS, ktcSO);
+
+
+
+/*###   ZMPT101B Variable    ###*/
+#define SAMPLING 300      //กำหนดจำนวนการสุ่มค่า
+#define VOFFSET 512       // 2.5V จาก 10Bit
+#define ADC_PIN A0        // เชื่อมต่อขา A0
+#define AMPLITUDE 411.00  //กำหนดให้ Amplitude = 2V หรือ 411 ใน ADC 10
+#define REAL_VAC 233.5    //กำหนดค่า Vinput ที่อ่านได้จริงจาก Multimeter
+int adc_max, adc_min;
+int adc_vpp;
+//ฟังก์ชั่นอ่านค่าแรงดันซีกบวก และลบเพื่อแปลงแรงดัน
+void read_VAC(){
+  int cnt;
+  adc_max = 0;
+  adc_min = 1024;
+
+  for (cnt = 0; cnt < SAMPLING; cnt++) //วน loop อ่านค่า ADC
+  {
+    int adc = analogRead(ADC_PIN); //อ่านค่า ADC
+    if (adc > adc_max) //หาค่า max
+    {
+      adc_max = adc;
+    }
+    if (adc < adc_min) //หาค่า min
+    {
+      adc_min = adc;
+    }
+  }
+  adc_vpp = adc_max - adc_min; //หาผลต่างของ input (Vpp)
+  // แปลงค่าที่อ่านได้เป็น  VAC
+  float V = map(adc_vpp, 0, AMPLITUDE, 0, REAL_VAC * 100) / 100.00; 
+  Serial.print("Phase 1 = ");
+  Serial.print(V);
+  Serial.println(" VAC");
+}
+
 
 
 /*###   Void setup    ###*/
