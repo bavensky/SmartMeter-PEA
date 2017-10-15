@@ -41,25 +41,18 @@ void data_out(char data)
 #define ct1 A0
 #define ct2 A1
 #define ct3 A2
-#define ct4 A3
-#define ct5 A8
-#define ct6 A9
 
 EnergyMonitor emon1;
 EnergyMonitor emon2;
 EnergyMonitor emon3;
-EnergyMonitor emon4;
-EnergyMonitor emon5;
-EnergyMonitor emon6;
 
-double Irms1, Irms2, Irms3, Irms4, Irms5, Irms6;
+double Irms1, Irms2, Irms3;
 
 
 /*###   Void setup    ###*/
 int ktcSO = 8;
 int ktcCS = 9;
 int ktcCLK = 11;
-
 MAX6675 ktc(ktcCLK, ktcCS, ktcSO);
 
 
