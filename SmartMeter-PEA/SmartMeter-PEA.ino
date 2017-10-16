@@ -207,6 +207,7 @@ void loop()
   Vrms2 =  read_VAC(pinADC2);
   Vrms3 =  read_VAC(pinADC3);
 
+  // sent data every 10 sec
   if (currentTime - prevTime >= 10000) {
     prevTime = currentTime;
     up2clound(String(Vrms1), String(Vrms2), String(Vrms3), String(Irms1), String(Irms2), String(Irms3), String(tempe));
